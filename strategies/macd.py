@@ -66,20 +66,20 @@ class MovingAveragesLongStrategy(Strategy):
                     price_short, price_long = self.calculate_long_short(df)
                     date = df.index.values[-1]
                     price = df['Close'][-1]
-                    self.strategy[symbol] = self.strategy[symbol].append({'Date': date, 'Short': price_short, 'Long': price_long}, ignore_index=True)
+                    self.strategy[symbol] = self.strategy[symbol]._append({'Date': date, 'Short': price_short, 'Long': price_long}, ignore_index=True)
                     if self.bought[symbol] == False and price_short > price_long:
                         quantity = math.floor(self.portfolio.current_holdings['cash'] / price)
                         signal = SignalEvent(symbol, date, 'LONG', quantity)
                         self.events.put(signal)
                         self.bought[symbol] = True
-                        self.signals[symbol] = self.signals[symbol].append({'Signal': quantity, 'Date': date}, ignore_index=True)
+                        self.signals[symbol] = self.signals[symbol]._append({'Signal': quantity, 'Date': date}, ignore_index=True)
                         if self.verbose: print("Long", date, price)
                     elif self.bought[symbol] == True and price_short < price_long:
                         quantity = self.portfolio.current_positions[symbol]
                         signal = SignalEvent(symbol, date, 'EXIT', quantity)
                         self.events.put(signal)
                         self.bought[symbol] = False
-                        self.signals[symbol] = self.signals[symbol].append({'Signal': -quantity, 'Date': date}, ignore_index=True)
+                        self.signals[symbol] = self.signals[symbol]._append({'Signal': -quantity, 'Date': date}, ignore_index=True)
                         if self.verbose: print("Exit", date, price)
 
     def plot(self):
@@ -179,7 +179,7 @@ class MovingAveragesLongShortStrategy(Strategy):
                         signal = SignalEvent(symbol, date, 'LONG', quantity)
                         self.events.put(signal)
                         self.bought[symbol] = True
-                        self.signals[symbol] = self.signals[symbol].append({'Signal': quantity, 'Date': date}, ignore_index=True)
+                        self.signals[symbol] = self.signals[symbol]._append({'Signal': quantity, 'Date': date}, ignore_index=True)
                         if self.verbose: print("Long", date, price)
                     elif self.bought[symbol] == True and price_short < price_long:
                         quantity = self.portfolio.current_positions[symbol]
@@ -188,7 +188,7 @@ class MovingAveragesLongShortStrategy(Strategy):
                         signal = SignalEvent(symbol, date, 'SHORT', quantity)
                         self.events.put(signal)
                         self.bought[symbol] = False
-                        self.signals[symbol] = self.signals[symbol].append({'Signal': -quantity, 'Date': date}, ignore_index=True)
+                        self.signals[symbol] = self.signals[symbol]._append({'Signal': -quantity, 'Date': date}, ignore_index=True)
                         if self.verbose: print("Short", date, price)
 
     def plot(self):
